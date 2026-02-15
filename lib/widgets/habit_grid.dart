@@ -20,7 +20,7 @@ class HabitGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600; // Mobile breakpoint
-    
+
     if (isMobile) {
       return _buildMobileLayout(context);
     } else {
@@ -33,14 +33,14 @@ class HabitGrid extends StatelessWidget {
       children: [
         // Mobile header with current date prominently displayed
         _buildMobileHeader(context),
-        
+
         const SizedBox(height: 16),
-        
+
         // Mobile habit list with accessible checkboxes
         ...habits.map((habit) => _buildMobileHabitCard(context, habit)),
-        
+
         const SizedBox(height: 16),
-        
+
         // Mobile footer stats
         _buildMobileFooterStats(context),
       ],
@@ -50,7 +50,7 @@ class HabitGrid extends StatelessWidget {
   Widget _buildMobileHeader(BuildContext context) {
     final today = DateTime.now();
     final todayStr = '${today.day} ${_getMonthName(today.month)} ${today.year}';
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -63,23 +63,26 @@ class HabitGrid extends StatelessWidget {
           Text(
             'Today\'s Date',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             todayStr,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Tap any checkbox to mark today\'s progress',
+            'Tap on a date to mark progress',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
-            ),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimaryContainer
+                      .withOpacity(0.8),
+                ),
           ),
         ],
       ),
@@ -89,8 +92,7 @@ class HabitGrid extends StatelessWidget {
   Widget _buildMobileHabitCard(BuildContext context, Habit habit) {
     final progress = habit.getCappedProgress(totalDays: habitState.daysInMonth);
     final todayIndex = DateTime.now().day - 1; // 0-based index
-    final isTodayCompleted = todayIndex < habit.dailyLogs.length && habit.dailyLogs[todayIndex];
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Padding(
@@ -105,8 +107,8 @@ class HabitGrid extends StatelessWidget {
                   child: Text(
                     habit.name,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 IconButton(
@@ -116,14 +118,15 @@ class HabitGrid extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Goal and progress info
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(16),
@@ -131,108 +134,81 @@ class HabitGrid extends StatelessWidget {
                   child: Text(
                     habit.targetGoal?.toString() ?? 'Daily',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   '${(progress * 100).toStringAsFixed(0)}% Complete',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: progress >= 1.0 ? Colors.green : 
-                           progress >= 0.5 ? Colors.orange : Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: progress >= 1.0
+                            ? Colors.green
+                            : progress >= 0.5
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
-            // Large, accessible today checkbox
-            GestureDetector(
-              onTap: () => onToggle(habit.id, todayIndex),
-              child: Container(
-                width: double.infinity,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: isTodayCompleted 
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 2,
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      isTodayCompleted ? Icons.check_circle : Icons.check_circle_outline,
-                      size: 32,
-                      color: isTodayCompleted 
-                          ? Colors.white
-                          : Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      isTodayCompleted ? 'Completed Today!' : 'Mark as Complete',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: isTodayCompleted 
-                            ? Colors.white
-                            : Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // Recent days (last 7 days) for quick view
-            Text(
-              'Recent Activity',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
+
+            // Scrollable interactive date strip
+
             SizedBox(
-              height: 40,
-              child: Row(
-                children: List.generate(7, (index) {
-                  final dayIndex = todayIndex - (6 - index);
-                  if (dayIndex < 0 || dayIndex >= habit.dailyLogs.length) {
-                    return const Expanded(child: SizedBox());
-                  }
-                  
-                  final isCompleted = habit.dailyLogs[dayIndex];
-                  final dayNum = dayIndex + 1;
-                  
-                  return Expanded(
+              height: 50,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: habitState.daysInMonth,
+                // Scroll to end to show latest days primarily
+                controller: ScrollController(
+                  initialScrollOffset:
+                      (todayIndex * 40.0).clamp(0.0, double.infinity),
+                ),
+                itemBuilder: (context, index) {
+                  final isCompleted = habit.dailyLogs[index];
+                  final dayNum = index + 1;
+                  final isToday = index == todayIndex;
+                  final isFuture = index > todayIndex;
+
+                  return GestureDetector(
+                    onTap: isFuture ? null : () => onToggle(habit.id, index),
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                      width: 40,
+                      margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
-                        color: isCompleted 
+                        color: isCompleted
                             ? Theme.of(context).colorScheme.primary
-                            : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(6),
+                            : isFuture
+                                ? Colors.grey[200]
+                                : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                        border: isToday
+                            ? Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              )
+                            : null,
                       ),
                       child: Center(
                         child: Text(
                           '$dayNum',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isCompleted ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: isCompleted
+                                        ? Colors.white
+                                        : isFuture
+                                            ? Colors.grey[400]
+                                            : Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                     ),
                   );
-                }),
+                },
               ),
             ),
           ],
@@ -254,7 +230,8 @@ class HabitGrid extends StatelessWidget {
 
     final totalChecks = dailyTotals.reduce((a, b) => a + b);
     final totalPossible = habits.length * habitState.daysElapsed;
-    final monthlyProgress = totalPossible > 0 ? totalChecks / totalPossible : 0.0;
+    final monthlyProgress =
+        totalPossible > 0 ? totalChecks / totalPossible : 0.0;
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -269,8 +246,8 @@ class HabitGrid extends StatelessWidget {
           Text(
             'Monthly Summary',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -328,8 +305,8 @@ class HabitGrid extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           Text(
             label,
@@ -343,32 +320,78 @@ class HabitGrid extends StatelessWidget {
 
   String _getMonthName(int month) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return months[month - 1];
   }
 
   Widget _buildDesktopLayout(BuildContext context) {
-    return Column(
-      children: [
-        // Desktop header row with day numbers and weekday labels
-        _buildHeaderRow(context),
-        
-        const SizedBox(height: 8),
-        
-        // Desktop habit rows
-        ...habits.map((habit) => _buildHabitRow(context, habit)),
-        
-        const SizedBox(height: 16),
-        
-        // Desktop footer stats
-        _buildFooterStats(context),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        // Fixed widths for metadata columns
+        const nameWidth = 190.0;
+        const goalWidth = 60.0;
+        const progressWidth = 80.0;
+        const fixedMetadataWidth = nameWidth + goalWidth + progressWidth;
+
+        // Calculate day width
+        final remainingWidth = availableWidth - fixedMetadataWidth;
+        final daysCount = habitState.daysInMonth;
+        var dayWidth = remainingWidth / daysCount;
+
+        // Enforce a minimum day width for usability
+        const minDayWidth = 32.0;
+        final bool needsScrolling = dayWidth < minDayWidth;
+
+        if (needsScrolling) {
+          dayWidth = minDayWidth;
+        }
+
+        final content = Column(
+          children: [
+            // Desktop header row with day numbers and weekday labels
+            _buildHeaderRow(context, dayWidth),
+
+            const SizedBox(height: 8),
+
+            // Desktop habit rows
+            ...habits.map((habit) => _buildHabitRow(context, habit, dayWidth)),
+
+            const SizedBox(height: 16),
+
+            // Desktop footer stats
+            _buildFooterStats(context),
+          ],
+        );
+
+        if (needsScrolling) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: fixedMetadataWidth + (dayWidth * daysCount),
+              child: content,
+            ),
+          );
+        } else {
+          return content;
+        }
+      },
     );
   }
 
-  Widget _buildHeaderRow(BuildContext context) {
+  Widget _buildHeaderRow(BuildContext context, double dayWidth) {
     return Row(
       children: [
         // Habit name column (wider for delete button)
@@ -377,58 +400,61 @@ class HabitGrid extends StatelessWidget {
           child: Text(
             'Habit',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ),
-        
+
         // Goal column
         SizedBox(
           width: 60,
           child: Text(
             'Goal',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
         ),
-        
+
         // Progress column
         SizedBox(
           width: 80,
           child: Text(
             'Progress',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
         ),
-        
+
         // Day columns
         ...List.generate(habitState.daysInMonth, (index) {
-          final isToday = habitState.daysElapsedMask[index] && 
-              _isToday(index, habitState);
-          
+          final isToday = _isToday(index, habitState);
+
           return SizedBox(
-            width: 32,
+            width: dayWidth,
             child: Column(
               children: [
                 Text(
                   '${index + 1}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isToday ? Theme.of(context).colorScheme.primary : null,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: isToday
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 Text(
                   habitState.dayLabels[index],
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontSize: 10,
-                    color: isToday ? Theme.of(context).colorScheme.primary : null,
-                  ),
+                        fontSize: 10,
+                        color: isToday
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -439,9 +465,9 @@ class HabitGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildHabitRow(BuildContext context, Habit habit) {
+  Widget _buildHabitRow(BuildContext context, Habit habit, double dayWidth) {
     final progress = habit.getCappedProgress(totalDays: habitState.daysInMonth);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -474,7 +500,7 @@ class HabitGrid extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Goal
           SizedBox(
             width: 60,
@@ -484,7 +510,7 @@ class HabitGrid extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          
+
           // Progress
           SizedBox(
             width: 80,
@@ -493,45 +519,51 @@ class HabitGrid extends StatelessWidget {
                 Text(
                   '${(progress * 100).toStringAsFixed(0)}%',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: progress >= 1.0 ? Colors.green : 
-                           progress >= 0.5 ? Colors.orange : Colors.red,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: progress >= 1.0
+                            ? Colors.green
+                            : progress >= 0.5
+                                ? Colors.orange
+                                : Colors.red,
+                      ),
                 ),
                 LinearProgressIndicator(
                   value: progress,
                   backgroundColor: Colors.grey[300],
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    progress >= 1.0 ? Colors.green : 
-                    progress >= 0.5 ? Colors.orange : Colors.red,
+                    progress >= 1.0
+                        ? Colors.green
+                        : progress >= 0.5
+                            ? Colors.orange
+                            : Colors.red,
                   ),
                 ),
               ],
             ),
           ),
-          
-          // Day checkboxes
           ...List.generate(habitState.daysInMonth, (index) {
             final isCompleted = habit.dailyLogs[index];
             final isPast = habitState.daysElapsedMask[index];
-            final isToday = isPast && _isToday(index, habitState);
-            
+            final isToday = _isToday(index, habitState);
+
             return SizedBox(
-              width: 32,
+              width: dayWidth,
               height: 32,
               child: GestureDetector(
                 onTap: isPast ? () => onToggle(habit.id, index) : null,
                 child: Container(
                   margin: const EdgeInsets.all(1),
                   decoration: BoxDecoration(
-                    color: isCompleted 
+                    color: isCompleted
                         ? Theme.of(context).colorScheme.primary
                         : isPast
                             ? Colors.grey[200]
                             : Colors.grey[100],
                     borderRadius: BorderRadius.circular(4),
-                    border: isToday 
-                        ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
+                    border: isToday
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2)
                         : null,
                   ),
                   child: isCompleted
@@ -563,7 +595,8 @@ class HabitGrid extends StatelessWidget {
 
     final totalChecks = dailyTotals.reduce((a, b) => a + b);
     final totalPossible = habits.length * habitState.daysElapsed;
-    final monthlyProgress = totalPossible > 0 ? totalChecks / totalPossible : 0.0;
+    final monthlyProgress =
+        totalPossible > 0 ? totalChecks / totalPossible : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -577,8 +610,8 @@ class HabitGrid extends StatelessWidget {
           Text(
             'Monthly Summary',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Row(
@@ -606,8 +639,8 @@ class HabitGrid extends StatelessWidget {
           Text(
             'Daily Activity',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 4),
           SizedBox(
@@ -617,7 +650,7 @@ class HabitGrid extends StatelessWidget {
                 final value = dailyTotals[index];
                 final maxValue = habits.length;
                 final height = maxValue > 0 ? (value / maxValue) * 40 : 0.0;
-                
+
                 return Expanded(
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 1),
@@ -625,7 +658,7 @@ class HabitGrid extends StatelessWidget {
                     child: Container(
                       height: height,
                       decoration: BoxDecoration(
-                        color: value > 0 
+                        color: value > 0
                             ? Theme.of(context).colorScheme.primary
                             : Colors.grey[300],
                         borderRadius: BorderRadius.circular(2),
@@ -665,8 +698,8 @@ class HabitGrid extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ],
         ),
@@ -678,8 +711,8 @@ class HabitGrid extends StatelessWidget {
     final today = DateTime.now();
     final checkDate = habitState.startDate.add(Duration(days: dayIndex));
     return checkDate.year == today.year &&
-           checkDate.month == today.month &&
-           checkDate.day == today.day;
+        checkDate.month == today.month &&
+        checkDate.day == today.day;
   }
 
   void _showDeleteConfirmation(BuildContext context, String habitId) {
@@ -687,7 +720,8 @@ class HabitGrid extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Habit'),
-        content: const Text('Are you sure you want to delete this habit? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to delete this habit? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

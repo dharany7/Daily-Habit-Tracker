@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/habit_provider.dart';
-import '../services/ai_service.dart';
 
 class AIInsightsScreen extends StatefulWidget {
   const AIInsightsScreen({super.key});
@@ -31,18 +30,18 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
 
   Future<void> _loadInsights() async {
     if (!mounted) return;
-    
+
     setState(() {
       _isLoading = true;
     });
 
     try {
       final provider = context.read<HabitProvider>();
-      final aiService = context.read<AIService>();
-      
+
       // Initialize AI service if needed (you'll need to provide API key)
+      // final aiService = context.read<AIService>();
       // await aiService.initialize('your-gemini-api-key');
-      
+
       if (provider.habitState != null && provider.stats != null) {
         // Generate progress insight
         // _insight = await aiService.generateProgressInsight(
@@ -50,13 +49,13 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
         //   habits: provider.habits,
         //   stats: provider.stats!,
         // );
-        
+
         // Generate habit suggestions
         // _suggestions = await aiService.generateHabitSuggestions(
         //   existingHabits: provider.habits,
         //   userPreferences: 'I want to improve my health and productivity',
         // );
-        
+
         // Generate weekly plan
         // _weeklyPlan = await aiService.generateWeeklyPlan(
         //   habits: provider.habits,
@@ -90,21 +89,19 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
     });
 
     try {
-      final provider = context.read<HabitProvider>();
-      final aiService = context.read<AIService>();
-      
       // final answer = await aiService.answerHabitQuestion(
       //   question: question,
       //   habits: provider.habits,
       // );
-      
+
       // Show answer in dialog
       if (mounted) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('AI Answer'),
-            content: const Text('AI features require Gemini API key. See setup instructions.'),
+            content: const Text(
+                'AI features require Gemini API key. See setup instructions.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -181,39 +178,42 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Progress Insight
             _buildInsightCard(
               title: 'Progress Analysis',
               icon: Icons.analytics,
-              content: _insight ?? 'AI analysis of your habit progress will appear here.',
+              content: _insight ??
+                  'AI analysis of your habit progress will appear here.',
               isLoading: _isLoading,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Habit Suggestions
             _buildInsightCard(
               title: 'Habit Suggestions',
               icon: Icons.lightbulb,
-              content: _suggestions ?? 'Personalized habit suggestions will appear here.',
+              content: _suggestions ??
+                  'Personalized habit suggestions will appear here.',
               isLoading: _isLoading,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Weekly Plan
             _buildInsightCard(
               title: 'Weekly Plan',
               icon: Icons.calendar_today,
-              content: _weeklyPlan ?? 'Your weekly habit plan will appear here.',
+              content:
+                  _weeklyPlan ?? 'Your weekly habit plan will appear here.',
               isLoading: _isLoading,
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Ask AI Question
             Card(
               child: Padding(
@@ -224,8 +224,8 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                     Text(
                       'Ask AI Assistant',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -242,11 +242,12 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: _isLoading ? null : _askQuestion,
-                        icon: _isLoading 
+                        icon: _isLoading
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.question_answer),
                         label: Text(_isLoading ? 'Thinking...' : 'Ask AI'),
@@ -281,8 +282,8 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const Spacer(),
                 if (isLoading)

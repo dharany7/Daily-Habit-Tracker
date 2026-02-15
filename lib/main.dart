@@ -6,9 +6,6 @@ import 'providers/auth_provider.dart';
 import 'providers/habit_provider.dart';
 import 'config/firebase_options.dart';
 
-
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -37,13 +34,12 @@ class HabitTrackerApp extends StatelessWidget {
         title: 'Habit Tracker',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF008080), // Teal color from the image
+            seedColor: const Color.fromARGB(
+                255, 20, 122, 230), // Teal color from the image
             brightness: Brightness.light,
-            surface: const Color.fromARGB(255, 141, 255, 215),
-            background: const Color.fromARGB(255, 154, 226, 228),
           ),
           useMaterial3: true,
-          scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: const Color.fromARGB(255, 224, 218, 218),
           appBarTheme: const AppBarTheme(
             centerTitle: true,
             elevation: 2,

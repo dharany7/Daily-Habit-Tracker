@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AuthProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   User? _user;
   bool _isLoading = false;
   String? _error;
@@ -82,7 +82,12 @@ class AuthProvider extends ChangeNotifier {
 
       final User? user = result.user;
       if (user != null) {
-        await _createOrUpdateUserDocument(user);
+        try {
+          await _createOrUpdateUserDocument(user);
+        } catch (e) {
+          debugPrint('Failed to update user document: $e');
+          // Don't block login if firestore update fails
+        }
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'An error occurred';
@@ -151,7 +156,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> _createOrUpdateUserDocument(User user) async {
     final userDoc = _firestore.collection('users').doc(user.uid);
-    
+
     await userDoc.set({
       'uid': user.uid,
       'email': user.email,
